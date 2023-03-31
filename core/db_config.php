@@ -1,9 +1,9 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "root";
+$password = "";
 $dbname = "qpsii_lgusystem";
-$port = '3334';
+$port = '3308';
 
 // Create connection
 $conn = mysqli_connect($servername, $username, $password,$dbname,$port);
