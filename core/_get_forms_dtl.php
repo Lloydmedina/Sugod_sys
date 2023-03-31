@@ -14,7 +14,7 @@ if (mysqli_num_rows($results) != 0) {
       $x = $rows['Total Collection'];
     }
     $b = $b.'
-  <div class="col-lg-3">
+  <div class="col-lg-2">
     <div class="small-box">
       <div class="inner" style="text-align: center;">
         <p>Form '.$rows['Form No'].'</p>
