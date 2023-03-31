@@ -44,7 +44,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <div class="wrapper">
 
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light layout-fixed layout-navbar-fixed layout-footer-fixed">
+  <nav class="main-header navbar  navbar-white navbar-light layout-fixed layout-navbar-fixed layout-footer-fixed">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -239,11 +239,13 @@ const datapoints =[<?php echo $resp;?>];
         borderWidth : 3,
         fill: false,
       cubicInterpolationMode: 'monotone',
-      tension: 0.4
+      tension: 0.4,
+
         },
     ]
     },
     options: {
+      showLine: false,
     responsive: true,
     plugins: {
       title: {
@@ -256,8 +258,10 @@ const datapoints =[<?php echo $resp;?>];
     },
     scales: {
       x: {
+        showLine: false ,
         beginAtZero : false,
         display: true,
+
         title: {
           display: true
         }
@@ -266,6 +270,7 @@ const datapoints =[<?php echo $resp;?>];
         autoskip: true,
         maxTicketsLimit:20,
         display: true,
+
         title: {
           display: true,
           text: 'Value'
