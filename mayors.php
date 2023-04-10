@@ -253,69 +253,57 @@ function loadORSumary(){
   });
 }
 function loadGrap(){
-  var cxt = document.getElementById("lineChart").getContext('2d');
+  const cxt = document.getElementById("lineChart");
   const DATA_COUNT = <?php echo mysqli_num_rows($result) ?>;
   const labels = [];
 for (let i = 1; i < DATA_COUNT; ++i) {
   labels.push(i.toString());
 }
 const datapoints =[<?php echo $resp;?>];
-console.log(datapoints);
-  var myChart = new Chart(cxt,{
-    type : 'line',
-    data : {
+var areaChartOptions = {
+      maintainAspectRatio : false,
+      responsive : true,
+      legend: {
+        display: true
+      },
+      scales: {
+        xAxes: [{
+          gridLines : {
+            display : false,
+          },
+
+        }],
+        yAxes: [{
+          gridLines : {
+            display : true,
+          }
+        }]
+      }
+    }
+
+    var areaChartData = {
       labels : labels,
       datasets : [
         {
         label : 'Collections',
         data : datapoints,
-        // backgroundColor : 'transparent',
+        backgroundColor : 'transparent',
         borderColor : 'skyblue',
-        borderWidth : 2,
+        borderWidth : 1,
         fill: false,
+        showLine:true,
         spanGaps : true,
-      cubicInterpolationMode: 'default',
+
       tension: 0.1,
 
         },
     ]
-    },
-  //   options: {
-  //     showLine: false,
-  //   responsive: true,
-  //   plugins: {
-  //     title: {
-  //       display: true,
-  //       text: '_'
-  //     },
-  //   },
-  //   interaction: {
-  //     intersect: false,
-  //   },
-  //   scales: {
-  //     x: {
-  //       showLine: false ,
-  //       beginAtZero : false,
-  //       display: true,
+    }
 
-  //       title: {
-  //         display: true
-  //       }
-  //     },
-  //     y: {
-  //       autoskip: true,
-  //       maxTicketsLimit:20,
-  //       display: true,
-
-  //       title: {
-  //         display: true,
-  //         text: 'Value'
-  //       },
-  //       suggestedMin: -10,
-  //       suggestedMax: 200
-  //     }
-  //   }
-  // }
+  var myChart = new Chart(cxt,{
+    type : 'line',
+    data : areaChartData,
+    options: areaChartOptions
   });
 }
 
