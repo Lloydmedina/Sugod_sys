@@ -3,7 +3,7 @@
     <!-- Brand Logo -->
     <a href="./" class="brand-link" style="text-align:center;">
       <!-- <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> -->
-      <span class="brand-text font-weight-bold">Municipality of Sugod</span>
+      <span class="brand-text font-weight-bold">Municipality of Sogod</span>
     </a>
     <hr>
     <!-- Sidebar -->
@@ -30,7 +30,7 @@
           </li>
           <li class="nav-item menu-open">
             <a href="./mayors.php" class="nav-link" id="mayors">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-pen"></i>
               <p>
                 Mayors
               </p>
@@ -38,9 +38,17 @@
           </li>
           <li class="nav-item menu-open">
             <a href="./water.php" class="nav-link" id="water">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-water"></i>
               <p>
                 Waterworks
+              </p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="./hris.php" class="nav-link" id="hris">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                HRIS
               </p>
             </a>
           </li>

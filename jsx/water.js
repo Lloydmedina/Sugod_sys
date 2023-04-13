@@ -20,12 +20,12 @@ $.ajax({
   }
 });
 
-$.ajax({
-  url:urls,
-  type: 'POST',
-  data: {datas : 'for_disconnection'},
-  success : function (res){
-  // alert(res)
-    $('#for_disconnection').html(res);
-  }
-});
+// $.ajax({
+//   url:urls,
+//   type: 'POST',
+//   data: {datas : 'for_disconnection'},
+//   success : function (res){
+//   // alert(res)
+//     $('#for_disconnection').html(res);
+//   }
+// });
