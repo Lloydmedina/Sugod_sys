@@ -67,9 +67,21 @@ include 'components/nav_sider.php';
                 <div class="chart col-sm-9">
                   <div>
                     <h3>Revenue Collection</h3>
-                    <span class="text-muted ">As of : Dec. 1 - 31 , 2021</span>
+                    <div class="form-group">
+                      <label class="text-muted ">As of :</label>
+
+                      <div class="input-group col-sm-6">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        <input type="text" class="form-control float-right" id="reservation">
+                      </div>
+                    </div>
+
                   </div>
-                  <div>
+                  <div id="graps">
                     <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                   </div>
                 </div>
@@ -144,68 +156,42 @@ include 'components/nav_sider.php';
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<script src="plugins/chart.js/Chart.bundle.min.js"></script>
-<script src="plugins/moment/moment-with-locales.min.js"></script>
-
+<?php
+include 'components/includes.php';
+?>
+<script src="jsx/index.js"></script>
 <script>
    $('#treasury').addClass('active');
   $(document).ready(function(){
+    processData(null,null);
+  $('#reservation').daterangepicker({
+    "startDate": "12/01/2021",
+    "endDate": "12/31/2021"
+}, function(start, end) {
+  console.log(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  processData(start.format('YYYY-MM-DD') , end.format('YYYY-MM-DD'));
+});
+});
 
-    getGraphData();
-    loadGrap();
-    getFormData();
-    loadORSumary();
-
-  });
-
-function getGraphData(){
+function processData(starts, ends){
   $.ajax({
     url:'core/_get_graph_dtl.php',
     type : 'POST',
+    data : {start : starts , end : ends },
     success : function (res){
-     // console.log(res)
-
-    }
-  });
-
-}
-
-function getFormData(){
-  $.ajax({
-    url:'core/_get_forms_dtl.php',
-    type : 'POST',
-    success : function (res){
-     // console.log(res)
-      $('#form_res').html(res);
-    }
-  });
-
-}
-function loadORSumary(){
-
-  $.ajax({
-    url:'core/_get_or_summary.php',
-    type : 'POST',
-    success : function (res){
-     console.log(res)
-      $('#or_sumarry').html(res);
-    }
-  });
-}
-function loadGrap(){
-  var cxt = document.getElementById("lineChart").getContext('2d');
-  const DATA_COUNT = 32;
+      console.log("this is the result",res);
+      let a = res;
+      let b = Array.from(a.split(','),Number);
+      var cxt = document.getElementById("lineChart").getContext('2d');
+  const DATA_COUNT = Array.from(a.split(','),Number).length;
   const labels = [];
 for (let i = 1; i < DATA_COUNT; ++i) {
   labels.push(i.toString());
 }
-const datapoints =[<?php echo $resp;?>];
-//const datapoints =[data];
+
+const datapoints =[b][0];
+console.log(datapoints);
+// console.log("from php",datapoints1);
   var myChart = new Chart(cxt,{
     type : 'line',
     data : {
@@ -261,7 +247,10 @@ const datapoints =[<?php echo $resp;?>];
     }
   }
   });
+    }
+  });
 }
+
 
 </script>
 </body>

@@ -5,12 +5,23 @@ $end = $_POST['end']== null ? '2021-12-31': $_POST['end'];
 $resp='';
 $xside = '';
 $yside = '';
-$sql = "CALL jay_dispaly_cto_incomeAcnt_list ('2','','','', '$start', '$end','Remitted')";
+
+
+$sql = "SELECT sogod.ledger.trans_date'Date',FORMAT(SUM(credit),2) 'Collection'
+FROM sogod.ledger
+INNER JOIN sogod.setup_application_installation
+ON (sogod.ledger.customer_id = sogod.setup_application_installation.id)
+INNER JOIN sogod.setup_zone
+ON sogod.setup_application_installation.zone_id = sogod.setup_zone.project_name
+WHERE sogod.ledger.trans_date BETWEEN '$start' AND '$end'
+AND sogod.ledger.trans_type IN ('PAYMENT BILLING','Discount BILLING')
+AND sogod.setup_application_installation.zone_id = sogod.setup_zone.project_name
+GROUP BY sogod.ledger.trans_date";
 $rows = $conn->query($sql);
 $rowcount = $rows->num_rows;
 if ($rows->num_rows > 0) {
   while($row = $rows->fetch_assoc()) {
-    $xside .=''.str_replace(',','',$row['OR Amount']) .',';
+    $xside .=''.str_replace(',','',$row['Collection']) .',';
     $yside .= '"'.$rows->num_rows.'",';
     //$xside .= $row['OR Amount'];
   }
