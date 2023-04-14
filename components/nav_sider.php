@@ -30,7 +30,7 @@
           </li>
           <li class="nav-item menu-open">
             <a href="./mayors.php" class="nav-link" id="mayors">
-              <i class="nav-icon fas fa-pen"></i>
+              <i class="nav-icon fas fa-star"></i>
               <p>
                 Mayors
               </p>

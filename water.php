@@ -1,30 +1,4 @@
-<?php
-require_once('core/db_config.php');
-$resp='';
 
-$sql = "SELECT sogod.ledger.trans_date'Date',FORMAT(SUM(credit),2) 'Collection'
-FROM sogod.ledger
-INNER JOIN sogod.setup_application_installation
-ON (sogod.ledger.customer_id = sogod.setup_application_installation.id)
-INNER JOIN sogod.setup_zone
-ON sogod.setup_application_installation.zone_id = sogod.setup_zone.project_name
-WHERE sogod.ledger.trans_date BETWEEN '2022-12-01' AND '2022-12-31'
-AND sogod.ledger.trans_type IN ('PAYMENT BILLING','Discount BILLING')
-AND sogod.setup_application_installation.zone_id = sogod.setup_zone.project_name
-GROUP BY sogod.ledger.trans_date";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-  // output data of each row
-  while($row = mysqli_fetch_assoc($result)) {
-    $resp = $resp.''.str_replace(',','',$row['Collection']) .',';
-  }
-} else {
-  echo "0 results";
-}
-
-
-?>
 
 
 <!DOCTYPE html>
@@ -67,17 +41,26 @@ include 'components/nav_sider.php';
           <div class="col-md-9">
             <!-- LINE CHART -->
             <div class="card">
-              <div class="card-body">
-              <div class="row">
-                  <div>
-                    <h3>Waterworks Collection</h3>
-                    <span class="text-muted ">As of : Dec. 1 - 31 , 2021</span>
+            <div class="card-body">
+              <div>
+                    <h3>Water Collection</h3>
+                    <div class="form-group">
+                      <label class="text-muted ">As of :</label>
+
+                      <div class="input-group col-sm-6">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        <input type="text" class="form-control float-right" id="reservation">
+                      </div>
+                    </div>
+
                   </div>
-                  <br>
                   <div>
-                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 350px; max-width: 100%;"></canvas>
+                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 450px; max-width: 100%;"></canvas>
                   </div>
-              </div>
               </div>
 
             </div>
@@ -190,13 +173,9 @@ include 'components/nav_sider.php';
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<script src="plugins/chart.js/Chart.bundle.min.js"></script>
-<script src="plugins/moment/moment-with-locales.min.js"></script>
+<?php
+include 'components/includes.php';
+?>
 <script src="jsx/water.js"></script>
 <!-- DataTables  & Plugins -->
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
@@ -217,7 +196,7 @@ include 'components/nav_sider.php';
   $(document).ready(function(){
 
 
-    loadGrap();
+    //loadGrap();
 
     $(function () {
     $("#summary_discon").DataTable({
@@ -232,29 +211,36 @@ include 'components/nav_sider.php';
       "responsive": true,
     });
   });
-  });
 
-function getGraphData(){
+    processData(null,null);
+  $('#reservation').daterangepicker({
+    "startDate": "12/01/2021",
+    "endDate": "12/31/2021"
+}, function(start, end) {
+  console.log(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  processData(start.format('YYYY-MM-DD') , end.format('YYYY-MM-DD'));
+});
+});
+
+function processData(starts, ends){
   $.ajax({
-    url:'core/_get_graph_dtl.php',
+    url:'core/_water_graph.php',
     type : 'POST',
+    data : {start : starts , end : ends },
     success : function (res){
-     // console.log(res)
-
-    }
-  });
-
-}
-
-function loadGrap(){
-  var cxt = document.getElementById("lineChart").getContext('2d');
-  const DATA_COUNT = 32;
+      console.log("this is the result",res);
+      let a = res;
+      let b = Array.from(a.split(','),Number);
+      var cxt = document.getElementById("lineChart").getContext('2d');
+  const DATA_COUNT = Array.from(a.split(','),Number).length;
   const labels = [];
 for (let i = 1; i < DATA_COUNT; ++i) {
   labels.push(i.toString());
 }
-const datapoints =[<?php echo $resp;?>];
-//const datapoints =[data];
+
+const datapoints =[b][0];
+console.log(datapoints);
+// console.log("from php",datapoints1);
   var myChart = new Chart(cxt,{
     type : 'line',
     data : {
@@ -310,7 +296,11 @@ const datapoints =[<?php echo $resp;?>];
     }
   }
   });
+    }
+  });
 }
+
+
 
 </script>
 </body>

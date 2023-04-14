@@ -137,9 +137,21 @@ include 'components/nav_sider.php';
             <!-- LINE CHART -->
             <div class="card">
               <div class="card-body">
-                  <div>
+              <div>
                     <h3>Revenue Collection</h3>
-                    <span class="text-muted ">As of : Dec. 1 - 31 , 2021</span>
+                    <div class="form-group">
+                      <label class="text-muted ">As of :</label>
+
+                      <div class="input-group col-sm-6">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        <input type="text" class="form-control float-right" id="reservation">
+                      </div>
+                    </div>
+
                   </div>
                   <div>
                     <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 450px; max-width: 100%;"></canvas>
@@ -200,88 +212,47 @@ include 'components/nav_sider.php';
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<script src="plugins/chart.js/Chart.bundle.min.js"></script>
-<script src="plugins/moment/moment-with-locales.min.js"></script>
+<?php
+include 'components/includes.php';
+?>
 <script src="jsx/mayors.js"></script>
 
 <script>
    $('#mayors').addClass('active');
-  $(document).ready(function(){
-    getGraphData();
-    loadGrap();
-    getFormData();
-    loadORSumary();
-  });
+   $(document).ready(function(){
+    processData(null,null);
+  $('#reservation').daterangepicker({
+    "startDate": "12/01/2021",
+    "endDate": "12/31/2021"
+}, function(start, end) {
+  console.log(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  processData(start.format('YYYY-MM-DD') , end.format('YYYY-MM-DD'));
+});
+});
 
-function getGraphData(){
+function processData(starts, ends){
   $.ajax({
-    url:'core/_get_graph_dtl.php',
+    url:'core/_mayor_graph.php',
     type : 'POST',
+    data : {start : starts , end : ends },
     success : function (res){
-     // console.log(res)
+     // console.log("this is the result",res);
+      let a = res;
+      let b = Array.from(a.split(','),Number);
 
-    }
-  });
-
-}
-
-function getFormData(){
-  $.ajax({
-    url:'core/_get_forms_dtl.php',
-    type : 'POST',
-    success : function (res){
-     // console.log(res)
-      $('#form_res').html(res);
-    }
-  });
-
-}
-function loadORSumary(){
-
-  $.ajax({
-    url:'core/_get_or_summary.php',
-    type : 'POST',
-    success : function (res){
-    // console.log(res)
-      $('#or_sumarry').html(res);
-    }
-  });
-}
-function loadGrap(){
-  const cxt = document.getElementById("lineChart");
-  const DATA_COUNT = <?php echo mysqli_num_rows($result) ?>;
+      var cxt = document.getElementById("lineChart").getContext('2d');
+  const DATA_COUNT = Array.from(a.split(','),Number).length;
   const labels = [];
 for (let i = 1; i < DATA_COUNT; ++i) {
   labels.push(i.toString());
 }
-const datapoints =[<?php echo $resp;?>];
-var areaChartOptions = {
-      maintainAspectRatio : false,
-      responsive : true,
-      legend: {
-        display: true
-      },
-      scales: {
-        xAxes: [{
-          gridLines : {
-            display : false,
-          },
 
-        }],
-        yAxes: [{
-          gridLines : {
-            display : true,
-          }
-        }]
-      }
-    }
-
-    var areaChartData = {
+const datapoints =[b][0];
+//console.log(datapoints);
+// console.log("from php",datapoints1);
+  var myChart = new Chart(cxt,{
+    type : 'line',
+    data : {
       labels : labels,
       datasets : [
         {
@@ -289,21 +260,52 @@ var areaChartOptions = {
         data : datapoints,
         backgroundColor : 'transparent',
         borderColor : 'skyblue',
-        borderWidth : 1,
+        borderWidth : 3,
         fill: false,
-        showLine:true,
-        spanGaps : true,
-
-      tension: 0.1,
+      cubicInterpolationMode: 'monotone',
+      tension: 0.4,
 
         },
     ]
-    }
+    },
+    options: {
+      showLine: false,
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: '_'
+      },
+    },
+    interaction: {
+      intersect: false,
+    },
+    scales: {
+      x: {
+        showLine: false ,
+        beginAtZero : false,
+        display: true,
 
-  var myChart = new Chart(cxt,{
-    type : 'line',
-    data : areaChartData,
-    options: areaChartOptions
+        title: {
+          display: true
+        }
+      },
+      y: {
+        autoskip: true,
+        maxTicketsLimit:20,
+        display: true,
+
+        title: {
+          display: true,
+          text: 'Value'
+        },
+        suggestedMin: -10,
+        suggestedMax: 200
+      }
+    }
+  }
+  });
+    }
   });
 }
 

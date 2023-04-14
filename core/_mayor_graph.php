@@ -5,12 +5,16 @@ $end = $_POST['end']== null ? '2021-12-31': $_POST['end'];
 $resp='';
 $xside = '';
 $yside = '';
-$sql = "CALL jay_dispaly_cto_incomeAcnt_list ('2','','','', '$start', '$end','Remitted')";
+$sql = "SELECT SUM(a.`net_amount`) 'Amount',a.`bill_date`'Date'
+FROM `cto_general_billing` a
+WHERE a.`status`<>'CANCELLED'
+AND a.`bill_date` BETWEEN '$start' AND '$end'
+GROUP BY DATE_FORMAT(a.`bill_date`,'%M %d %Y')";
 $rows = $conn->query($sql);
 $rowcount = $rows->num_rows;
 if ($rows->num_rows > 0) {
   while($row = $rows->fetch_assoc()) {
-    $xside .=''.str_replace(',','',$row['OR Amount']) .',';
+    $xside .=''.str_replace(',','',$row['Amount']) .',';
     $yside .= '"'.$rows->num_rows.'",';
     //$xside .= $row['OR Amount'];
   }

@@ -74,7 +74,18 @@ include 'components/nav_sider.php';
                 <div class="chart col-sm-9">
                   <div>
                     <h3>Department Employee Count</h3>
-                    <span class="text-muted ">As of : Dec. 1 - 31 , 2021</span>
+                    <!-- <div class="form-group">
+                      <label>Department</label>
+                      <select class="form-control select2" style="width: 100%;">
+                        <option selected="selected">Alabama</option>
+                        <option>Alaska</option>
+                        <option>California</option>
+                        <option>Delaware</option>
+                        <option>Tennessee</option>
+                        <option>Texas</option>
+                        <option>Washington</option>
+                      </select>
+                    </div> -->
                   </div>
                   <div>
                     <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
@@ -145,36 +156,50 @@ include 'components/nav_sider.php';
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<script src="plugins/chart.js/Chart.bundle.min.js"></script>
-<script src="plugins/moment/moment-with-locales.min.js"></script>
+<?php
+include 'components/includes.php';
+?>
 <script src="jsx/hris.js"></script>
 
 <script>
    $('#hris').addClass('active');
-loadGrap();
+   $(document).ready(function(){
+    processData(null,null);
+  $('#reservation').daterangepicker({
+    "startDate": "12/01/2021",
+    "endDate": "12/31/2021"
+}, function(start, end) {
+  console.log(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  processData(start.format('YYYY-MM-DD') , end.format('YYYY-MM-DD'));
+});
+});
 
+function processData(starts, ends){
+  $.ajax({
+    url:'core/_hris_graph.php',
+    type : 'POST',
+    data : {start : starts , end : ends },
+    success : function (res){
+      console.log("this is the result",res);
+      let a = res;
+      let b = Array.from(a.split(','),Number);
+      var cxt = document.getElementById("lineChart").getContext('2d');
+  const DATA_COUNT = Array.from(a.split(','),Number).length;
+  const labels = [];
+for (let i = 1; i < DATA_COUNT; ++i) {
+  labels.push(i.toString());
+}
 
-function loadGrap(){
-  var cxt = document.getElementById("lineChart").getContext('2d');
-  const DATA_COUNT = 32;
-  const labels = [<?php echo $lbl;?>];
-// for (let i = 1; i < DATA_COUNT; ++i) {
-//   labels.push(i.toString());
-// }
-const datapoints =[<?php echo $resp;?>];
-//const datapoints =[data];
+const datapoints =[b][0];
+console.log(datapoints);
+// console.log("from php",datapoints1);
   var myChart = new Chart(cxt,{
     type : 'line',
     data : {
       labels : labels,
       datasets : [
         {
-        label : 'No of Employee',
+        label : 'No. Employees',
         data : datapoints,
         backgroundColor : 'transparent',
         borderColor : 'skyblue',
@@ -222,6 +247,8 @@ const datapoints =[<?php echo $resp;?>];
       }
     }
   }
+  });
+    }
   });
 }
 
