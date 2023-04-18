@@ -204,11 +204,15 @@ include 'components/includes.php';
 
     }).buttons().container().appendTo('#example1_wrapper .col-md-12:eq(0)');
     $('#example2').DataTable({
-      "paging": true,
+      'bPaginate': true,
+      'bProcessing':true,
+
       "lengthChange": false,
       "searching": false,
       "autoWidth": false,
       "responsive": true,
+      "lengthMenu": [20, 40, 60, 80, 100],
+        "pageLength": 10
     });
   });
 

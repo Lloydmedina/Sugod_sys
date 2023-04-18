@@ -274,7 +274,7 @@ const datapoints =[b][0];
     plugins: {
       title: {
         display: true,
-        text: '_'
+        text: 'sample'
       },
     },
     interaction: {
